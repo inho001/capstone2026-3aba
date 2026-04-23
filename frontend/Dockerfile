@@ -11,14 +11,3 @@ FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
-
-# 1단계: 빌드 스테이지
-FROM maven:3.8-openjdk-17 AS build
-COPY . /app
-WORKDIR /app
-RUN mvn clean package -DskipTests
-
-# 2단계: 실행 스테이지
-FROM openjdk:17-jdk-slim
-COPY --from=build /app/target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
